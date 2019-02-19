@@ -193,7 +193,6 @@ The Newton’s Method follows the same structure as steepest descent method, how
 In Matlab the function \textit{fminuc} is used to calculate the minimum values of the provided function, it also uses a recursive method to solve the for the minimum.\footnote{https://www.mathworks.com/help/optim/ug/fminunc.html}
 
 It provides the options of quasi-newton or trust region, for the report the trust region was used. 
-The trust region uses the quadratic method, the main equation is provide below. 
 \pagebreak
 \subsection{Synthesis of Mechanisms}
 \subsubsection{Motion Generation}
@@ -236,11 +235,24 @@ We determine the closed-loop vector equation for the system which is as follows:
 \begin{equation}
     V_1+V_2+V_3-V_4-V_5=0
 \end{equation}
-From this, we break down the system in terms of x and y to obtain
+From this, we break down the system in terms of x and y to obtain equations \ref{eq:left_1} and \ref{eq:left_2}. Here, $\delta_j$ and $\alpha_j$ are known for $j = 1, 2, 3$ and $r_{2x}, r_{2y}, r’_{3x}, r’_{3y}$ and $\beta_j (for j = 1, 2, 3)$ are unknown. 
+As we have 3 sets of equations all going to zero, the objective function can be established as seen in equation \ref{eq:left_obj}.
+\begin{align}
+    f_{jx}&=\color{red}r_{2x}\color{black}+\color{red}r'_{3x}\color{black}+\color{blue}\delta_{jx}\color{black}-\color{red}r'_{3x}\color{black}cos(\color{blue}\alpha_j\color{black})+\color{red}r'_{3y}\color{black}sin(\color{blue}\alpha_j\color{black})-\color{red}r_{2x}\color{black}cos(\color{red}\beta_j\color{black})+\color{red}r_{2y}\color{black}sin(\color{red}\beta_j\color{black})=0\label{eq:left_1}\\
+    f_{jy}&=\color{red}r_{2y}\color{black}+\color{red}r'_{3y}\color{black}+\color{blue}\delta_{jy}\color{black}-\color{red}r'_{3y}\color{black}cos(\color{blue}\alpha_j\color{black})+\color{red}r'_{3x}\color{black}sin(\color{blue}\alpha_j\color{black})-\color{red}r_{2y}\color{black}cos(\color{red}\beta_j\color{black})+\color{red}r_{2x}\color{black}sin(\color{red}\beta_j\color{black})=0\label{eq:left_2}\\
+    F&=\sqrt{(f_{1x})^2+(f_{1y})^2+(f_{2x})^2+(f_{2y})^2+(f_{3x})^2+(f_{3y})^2}\label{eq:left_obj}
+\end{align}
+Similarly, for right-side analysis, we arrive on the following equations:
+\begin{align}
+    g_{jx}&=\color{red}r_{4x}\color{black}+\color{red}r''_{3x}\color{black}+\color{blue}\delta_{jx}\color{black}-\color{red}r''_{3x}\color{black}cos(\color{blue}\alpha_j\color{black})+\color{red}r''_{3y}\color{black}sin(\color{blue}\alpha_j\color{black})-\color{red}r_{4x}\color{black}cos(\color{red}\beta_j\color{black})+\color{red}r_{4y}\color{black}sin(\color{red}\beta_j\color{black})=0\\
+    g_{jy}&=\color{red}r_{4y}\color{black}+\color{red}r''_{3y}\color{black}+\color{blue}\delta_{jy}\color{black}-\color{red}r''_{3y}\color{black}cos(\color{blue}\alpha_j\color{black})+\color{red}r''_{3x}\color{black}sin(\color{blue}\alpha_j\color{black})-\color{red}r_{4y}\color{black}cos(\color{red}\beta_j\color{black})+\color{red}r_{4x}\color{black}sin(\color{red}\beta_j\color{black})=0\\
+    G&=\sqrt{(g_{1x})^2+(g_{1y})^2+(g_{2x})^2+(g_{2y})^2+(g_{3x})^2+(g_{3y})^2}
+\end{align}
+The given ‘MSE\_211\_Lab\_2\_motion\_generation.m’ MATLAB code is used to input the different variables and equations for both left and right-side analysis, to minimize the objective functions and therefore animate the system.
 \subsubsection{Path Generation}
 Matlab was used to find the optimal dimensions and configuration of a 4-bar system acting as a walking spider, where the tip of the leg must pass through four precision points as a function of the input angle, a diagram of these points can be seen in figure \ref{fig:precionpoints_PG}.
 
-\begin{figure}[h!]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{path_generation.png}
     \caption{Precision Point for Path Generation}
@@ -250,10 +262,12 @@ To find the optimal dimensions, a system of loop equations of the vector represe
 \begin{align}
     f_{jx}&=\color{red}r_{2x}\color{black}+\color{red}r'_{3x}\color{black}+\color{blue}\delta_{jx}\color{black}-\color{red}r'_{3x}\color{black}cos(\color{red}\alpha_j\color{black})+\color{red}r'_{3y}\color{black}sin(\color{red}\alpha_j\color{black})-\color{red}r_{2x}\color{black}cos(\color{blue}\beta_j\color{black})+\color{red}r_{2y}\color{black}sin(\color{blue}\beta_j\color{black})=0\\
     f_{jy}&=\color{red}r_{2y}\color{black}+\color{red}r'_{3y}\color{black}+\color{blue}\delta_{jy}\color{black}-\color{red}r'_{3y}\color{black}cos(\color{red}\alpha_j\color{black})+\color{red}r'_{3x}\color{black}sin(\color{red}\alpha_j\color{black})-\color{red}r_{2y}\color{black}cos(\color{blue}\beta_j\color{black})+\color{red}r_{2x}\color{black}sin(\color{blue}\beta_j\color{black})=0\\
-    F&=\sqrt{(f_{1x})^2+f_{1y})^2+f_{2x})^2+f_{2y})^2+f_{3x})^2+f_{3y})^2}
+    F&=\sqrt{(f_{1x})^2+(f_{1y})^2+(f_{2x})^2+(f_{2y})^2+(f_{3x})^2+(f_{3y})^2}
 \end{align}
+
 \subsubsection{Function Generation}
 The function generation method allows a continuous output based on input, primarily the input and output angles are known, and the required movement of the mechanism are to be calculated. For the purpose of this lab the movement of joint are specified, the input must travel 60 degrees and the output travels at 90 degrees.
+
 \begin{figure}[h!]
     \centering
     \includegraphics[width=0.7\textwidth]{func_gen.png}
@@ -267,6 +281,10 @@ The equation associated with each of the linkage movements are defined but the j
 \begin{multline}
     f_{jy}=-\color{blue}r_{2x}\color{black}sin(\color{blue}\beta_j\color{black})+\color{blue}r_{2y}\color{black}cos(\color{blue}\beta_j\color{black})-\color{red}r_{3x}\color{black}sin(\color{red}\phi_{j}\color{black})+\color{red}r_{3y}\color{black}cos(\color{red}\phi_j\color{black})+\\\color{red}r_{4x}\color{black}sin(\color{blue}\gamma_{j}\color{black})-\color{red}r_{4y}\color{black}cos(\color{blue}\gamma_{j}\color{black})+\color{blue}r_{2x}\color{black}+\color{red}r_{3x}\color{black}-\color{red}r_{4x}\color{black}=0
 \end{multline}
+\begin{equation}
+        F=\sqrt{(f_{1x})^2+(f_{1y})^2+(f_{2x})^2+(f_{2y})^2+(f_{3x})^2+(f_{3y})^2}
+\end{equation}
+
 \pagebreak
 \section{Results}
 \subsection{Part 1}
@@ -387,15 +405,78 @@ Show in table \ref{tab:SDM_guess1} to \ref{tab:SDM_guess4} are several iteration
 \end{landscape}
 \pagebreak
 \subsubsection{Newton's Method}
-When implementing Newton's method we encountered problems with determining the step size.
+When implementing Newton's method we encountered problems with using the same guesses as the steepest decent method. When we use the initial points from SDM the algorithm does not converge to a minima, however if we choose initial points closer to the minima, the algorithm quickly converges to the correct point.
+% Table generated by Excel2LaTeX from sheet 'Sheet1'
+\begin{table}[h!]
+  \centering
+  \caption{Newton's Method with $(x_i,y_i) = (0,0)$}
+    \begin{tabular}{rrrrr}
+    \multicolumn{1}{l}{\textbf{Iteration }} & \multicolumn{1}{l}{\textbf{Estimated Point X}} & \multicolumn{1}{l}{\textbf{Estimated Point Y}} & \multicolumn{1}{l}{\textbf{F(x,y)}} & \multicolumn{1}{l}{\textbf{Error}} \\
+    1     & 0.000 & 0.000 & 170.000 & \multicolumn{1}{l}{NaN} \\
+    2     & -0.333 & -0.846 & 181.501 & 0.909 \\
+    3     & -0.271 & -0.919 & 181.616 & 0.096 \\
+    4     & -0.271 & -0.923 & 181.617 & 0.004 \\
+    5     & -0.271 & -0.923 & 181.617 & 0.000 \\
+    \end{tabular}%
+\end{table}%
+% Table generated by Excel2LaTeX from sheet 'Sheet1'
+\begin{table}[h!]
+  \centering
+  \caption{Newton's Method with $(x_i,y_i) = (-1,0)$}
+    \begin{tabular}{rrrrr}
+    \multicolumn{1}{l}{\textbf{Iteration }} & \multicolumn{1}{l}{\textbf{Estimated Point X}} & \multicolumn{1}{l}{\textbf{Estimated Point Y}} & \multicolumn{1}{l}{\textbf{F(x,y)}} & \multicolumn{1}{l}{\textbf{Error}} \\
+    1     & -1.000 & 0.000 & 164.000 & \multicolumn{1}{l}{NaN} \\
+    2     & -0.095 & -0.787 & 180.656 & 1.200 \\
+    3     & -0.273 & -0.921 & 181.616 & 0.222 \\
+    4     & -0.271 & -0.923 & 181.617 & 0.003 \\
+    5     & -0.271 & -0.923 & 181.617 & 0.000 \\
+    \end{tabular}%
+\end{table}%
+% Table generated by Excel2LaTeX from sheet 'Sheet1'
+\begin{table}[h!]
+  \centering
+  \caption{Newton's Method with $(x_i,y_i) = (-3,-3)$}
+    \begin{tabular}{rrrrr}
+    \multicolumn{1}{l}{\textbf{Iteration }} & \multicolumn{1}{l}{\textbf{Estimated Point X}} & \multicolumn{1}{l}{\textbf{Estimated Point Y}} & \multicolumn{1}{l}{\textbf{F(x,y)}} & \multicolumn{1}{l}{\textbf{Error}} \\
+    1     & -3.000 & -3.000 & 26.000 & \multicolumn{1}{l}{NaN} \\
+    2     & -4.282 & -3.468 & 15.523 & 1.365 \\
+    3     & -3.858 & -3.313 & 0.342 & 0.452 \\
+    4     & -3.782 & -3.284 & 0.000 & 0.082 \\
+    5     & -3.779 & -3.283 & 0.000 & 0.003 \\
+    6     & -3.779 & -3.283 & 0.000 & 0.000 \\
+    \end{tabular}%
+\end{table}%
+% Table generated by Excel2LaTeX from sheet 'Sheet1'
+\begin{table}[H]
+  \centering
+  \caption{Newton's Method with $(x_i,y_i) = (3,-3)$}
+    \begin{tabular}{rrrrr}
+    \multicolumn{1}{l}{\textbf{Iteration }} & \multicolumn{1}{l}{\textbf{Estimated Point X}} & \multicolumn{1}{l}{\textbf{Estimated Point Y}} & \multicolumn{1}{l}{\textbf{F(x,y)}} & \multicolumn{1}{l}{\textbf{Error}} \\
+    1     & 3.000 & -3.000 & 50.000 & \multicolumn{1}{l}{NaN} \\
+    2     & 3.926 & -2.255 & 8.705 & 1.188 \\
+    3     & 3.627 & -1.943 & 0.209 & 0.432 \\
+    4     & 3.586 & -1.855 & 0.001 & 0.098 \\
+    5     & 3.584 & -1.848 & 0.000 & 0.007 \\
+    6     & 3.584 & -1.848 & 0.000 & 0.000 \\
+    \end{tabular}%
+\end{table}%
+\begin{landscape}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=9in,height=6.5in]{NM_Contour.eps}
+    \caption{Contour Plot with Newton's Method}
+    \label{fig:SDM_Contour}
+\end{figure}
+\end{landscape}
+
 \subsubsection{Matlab's Function}
-From table \ref{tab:fminunc} we can see that MATLAB's function find the minima much quicker than the steepest decent method.
+From table \ref{tab:fminunc} we can see that MATLAB's function find the minima much quicker than the steepest decent method and reliably converges.
 % Table generated by Excel2LaTeX from sheet 'Sheet1'
 \begin{table}[htbp]
   \centering
   \caption{\textit{fminunc} With Different Initial Guess}
     \begin{tabular}{lrrrr}
-    \textbf{Initial Guess} & \multicolumn{1}{l}{\textbf{Number of Iterations}} & \multicolumn{1}{l}{\textbf{Estimated X Point}} & \multicolumn{1}{l}{\textbf{Estimated Y Point}} & \multicolumn{1}{l}{\textbf{F(x,y)}} \\
+    \textbf{Initial Guess} & \multicolumn{1}{l}{\textbf{\# Iterations}} & \multicolumn{1}{l}{\textbf{Estimated X Point}} & \multicolumn{1}{l}{\textbf{Estimated Y Point}} & \multicolumn{1}{l}{\textbf{F(x,y)}} \\
     (0,0) & 9     & 3.000 & 2.000 & 1.67E-13 \\
     (-1,0) & 8     & -2.805 & 3.131 & 1.00E-13 \\
     (0,-1) & 8     & 3.584 & -1.848 & 7.05E-13 \\
@@ -495,6 +576,7 @@ The function generation successfully follows the mechanisms described in the man
     \caption{Function Generation Animation}
     \label{fig:FG_animation}
 \end{figure}
+As it can be seen, the four-bar links follows the angles outlined in the lab manual. 
 \pagebreak
 \section{Conclusion}
 Overall, all of the procedure of the lab manual was followed and showed successful results. Part 1 in the Lab showed that choosing the right algorithm can save time and power to conclude the same results. Furthermore Part 2 provided the necessary equation and the methodology to execute the upcoming project. In the end, the lab provided useful skills and algorithms needed to complete future problems.
@@ -509,6 +591,12 @@ Overall, all of the procedure of the lab manual was followed and showed successf
 \lstinputlisting[style=Matlab-editor, basicstyle=\mlttfamily\scriptsize, caption={Lab\_2\_Hess.m}]{Part1_MatlabCode/Lab_2_Hess.m}
 \lstinputlisting[style=Matlab-editor, basicstyle=\mlttfamily\scriptsize, caption={Lab\_2\_sdm.m}]{Part1_MatlabCode/Lab_2_sdm.m}
 \lstinputlisting[style=Matlab-editor, basicstyle=\mlttfamily\scriptsize, caption={Lab\_2\_Newton.m}]{Part1_MatlabCode/Lab_2_Newton.m}
+\pagebreak
+\subsection{Part 2}
+\lstinputlisting[style=Matlab-editor, basicstyle=\mlttfamily\scriptsize, caption={MSE\_211\_Lab\_2\_motion\_generation.m}]{Part2_MatlabCode/MSE_211_Lab_2_motion_generation.m}
+\lstinputlisting[style=Matlab-editor, basicstyle=\mlttfamily\scriptsize, caption={MSE\_211\_Lab\_2\_path\_generation.m}]{Part2_MatlabCode/MSE_211_Lab_2_path_generation.m}
+\lstinputlisting[style=Matlab-editor, basicstyle=\mlttfamily\scriptsize, caption={MSE\_211\_Lab\_2\_function\_generation.m}]{Part2_MatlabCode/MSE_211_Lab_2_function_generation.m}
+
 \end{document}
               
             
